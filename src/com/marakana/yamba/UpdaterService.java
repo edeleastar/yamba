@@ -1,5 +1,8 @@
 package com.marakana.yamba;
 
+import java.util.List;
+import winterwell.jtwitter.Twitter;
+import winterwell.jtwitter.TwitterException;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -9,9 +12,10 @@ public class UpdaterService extends Service
 {
   private static final String TAG = "UpdaterService";
 
-  static final int DELAY = 60000; 
+  static final int DELAY = 20000; 
   private boolean runFlag = false;
   private Updater updater;
+  private YambaApplication yamba; 
 
   @Override
   public IBinder onBind(Intent intent)
@@ -23,7 +27,7 @@ public class UpdaterService extends Service
   public void onCreate()
   {
     super.onCreate();
-
+    this.yamba = (YambaApplication) getApplication();
     this.updater = new Updater();
 
     Log.d(TAG, "onCreated");
@@ -34,8 +38,9 @@ public class UpdaterService extends Service
   {
     super.onStartCommand(intent, flags, startId);
 
-    this.runFlag = true; 
+    this.runFlag = true;
     this.updater.start();
+    this.yamba.setServiceRunning(true);
 
     Log.d(TAG, "onStarted");
     return START_STICKY;
@@ -46,35 +51,51 @@ public class UpdaterService extends Service
   {
     super.onDestroy();
 
-    this.runFlag = false; 
-    this.updater.interrupt(); 
+    this.runFlag = false;
+    this.updater.interrupt();
     this.updater = null;
+    this.yamba.setServiceRunning(false);
 
     Log.d(TAG, "onDestroyed");
   }
 
-
   private class Updater extends Thread
-  { 
+  {
+    List<Twitter.Status> timeline;
+
     public Updater()
     {
-      super("UpdaterService-Updater"); 
+      super("UpdaterService-Updater");
     }
 
     @Override
     public void run()
-    { 
-      UpdaterService updaterService = UpdaterService.this; 
+    {
+      UpdaterService updaterService = UpdaterService.this;
       while (updaterService.runFlag)
       {
         Log.d(TAG, "Updater running");
         try
         {
+          try
+          {
+            timeline = yamba.getTwitter().getFriendsTimeline(); 
+          }
+          catch (TwitterException e)
+          {
+            Log.e(TAG, "Failed to connect to twitter service", e); 
+          }
+
+          for (Twitter.Status status : timeline)
+          { 
+            Log.d(TAG, String.format("%s: %s", status.user.name, status.text)); 
+          }
+
           Log.d(TAG, "Updater ran");
-          Thread.sleep(DELAY); 
+          Thread.sleep(DELAY);
         }
         catch (InterruptedException e)
-        { 
+        {
           updaterService.runFlag = false;
         }
       }
