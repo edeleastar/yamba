@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!-- Main Layout of Status Activity -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
   android:orientation="vertical" android:layout_width="fill_parent"
@@ -8,8 +7,14 @@
   <!-- Title TextView-->
   <TextView android:layout_width="fill_parent"
     android:layout_height="wrap_content" android:gravity="center"
-    android:textSize="30sp"
-    android:layout_margin="10dp" android:text="@string/titleStatus"/>
+    android:text="@string/titleStatus" android:textSize="30sp"
+    android:layout_margin="10dp" />
+    
+  <!-- Text Counter TextView <1> -->  
+  <TextView android:layout_width="wrap_content"
+    android:layout_height="wrap_content" android:layout_gravity="right"
+    android:id="@+id/textCount" android:text="000"
+    android:layout_marginRight="10dp" />
     
   <!-- Status EditText  -->
   <EditText android:layout_width="fill_parent"
