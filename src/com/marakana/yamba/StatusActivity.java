@@ -19,14 +19,12 @@ public class StatusActivity extends Activity implements OnClickListener
   Button updateButton;
   Twitter twitter;
 
-  /** Called when the activity is first created. */
   @Override
   public void onCreate(Bundle savedInstanceState)
   {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.status);
 
-    // Find views
     editText = (EditText) findViewById(R.id.editText);
     updateButton = (Button) findViewById(R.id.buttonUpdate);
     updateButton.setOnClickListener(this);
@@ -39,7 +37,7 @@ public class StatusActivity extends Activity implements OnClickListener
   { 
     @Override
     protected String doInBackground(String... statuses)
-    { // <2>
+    { 
       try
       {
         Twitter.Status status = twitter.updateStatus(statuses[0]);
