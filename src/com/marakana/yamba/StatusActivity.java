@@ -10,33 +10,30 @@ import android.widget.Button;
 import android.widget.EditText;
 
 public class StatusActivity extends Activity implements OnClickListener
-{ // <1>
+{ 
   private static final String TAG = "StatusActivity";
   EditText editText;
   Button updateButton;
   Twitter twitter;
 
-  /** Called when the activity is first created. */
   @Override
   public void onCreate(Bundle savedInstanceState)
   {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.status);
 
-    // Find views
-    editText = (EditText) findViewById(R.id.editText); // <2>
+    editText = (EditText) findViewById(R.id.editText); 
     updateButton = (Button) findViewById(R.id.buttonUpdate);
 
-    updateButton.setOnClickListener(this); // <3>
+    updateButton.setOnClickListener(this); 
 
-    twitter = new Twitter("student", "password"); // <4>
+    twitter = new Twitter("student", "password"); 
     twitter.setAPIRootUrl("http://yamba.marakana.com/api");
   }
 
-  // Called when button is clicked // <5>
   public void onClick(View v)
   {
-    twitter.setStatus(editText.getText().toString()); // <6>
+    twitter.setStatus(editText.getText().toString());
     Log.d(TAG, "onClicked");
   }
 }
