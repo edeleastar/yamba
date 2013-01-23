@@ -3,12 +3,15 @@ package com.marakana.yamba;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 
-public class PrefsActivity extends PreferenceActivity { 
+public class PrefsActivity extends PreferenceActivity
+{
 
+  @SuppressWarnings("deprecation")
   @Override
-  protected void onCreate(Bundle savedInstanceState) { 
+  protected void onCreate(Bundle savedInstanceState)
+  {
     super.onCreate(savedInstanceState);
-    addPreferencesFromResource(R.xml.prefs); 
+    addPreferencesFromResource(R.xml.prefs);
   }
 
 }
