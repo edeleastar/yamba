@@ -9,6 +9,7 @@ import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 public class YambaApplication extends Application implements OnSharedPreferenceChangeListener
@@ -36,24 +37,20 @@ public class YambaApplication extends Application implements OnSharedPreferenceC
     Log.i(TAG, "onTerminated");
   }
 
-  public StatusData getStatusData()
-  {
-    return statusData;
-  }
-
   public synchronized Twitter getTwitter()
   {
-    if (twitter == null)
+    if (this.twitter == null)
     {
-      String username, password, apiRoot;
-      username = prefs.getString("username", "student");
-      password = prefs.getString("password", "password");
-      apiRoot = prefs.getString("apiRoot", "http://yamba.marakana.com/api");
-
-      twitter = new Twitter(username, password);
-      twitter.setAPIRootUrl(apiRoot);
+      String username = this.prefs.getString("username", null);
+      String password = this.prefs.getString("password", null);
+      String apiRoot = prefs.getString("apiRoot", "http://yamba.marakana.com/api");
+      if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password) && !TextUtils.isEmpty(apiRoot))
+      {
+        this.twitter = new Twitter(username, password);
+        this.twitter.setAPIRootUrl(apiRoot);
+      }
     }
-    return twitter;
+    return this.twitter;
   }
 
   public synchronized void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
@@ -71,8 +68,18 @@ public class YambaApplication extends Application implements OnSharedPreferenceC
     this.serviceRunning = serviceRunning;
   }
 
+  public StatusData getStatusData()
+  {
+    return statusData;
+  }
+
+  public SharedPreferences getPrefs()
+  {
+    return prefs;
+  }
+
   public synchronized int fetchStatusUpdates()
-  { 
+  {
     Log.d(TAG, "Fetching status updates");
     Twitter twitter = this.getTwitter();
     if (twitter == null)
@@ -109,4 +116,5 @@ public class YambaApplication extends Application implements OnSharedPreferenceC
       return 0;
     }
   }
+
 }

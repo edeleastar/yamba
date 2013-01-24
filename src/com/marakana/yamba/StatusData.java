@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 public class StatusData
-{ 
+{
   private static final String TAG = StatusData.class.getSimpleName();
 
   static final int VERSION = 1;
@@ -50,42 +50,42 @@ public class StatusData
     }
   }
 
-  private final DbHelper dbHelper; 
+  private final DbHelper dbHelper;
 
   public StatusData(Context context)
-  { 
+  {
     this.dbHelper = new DbHelper(context);
     Log.i(TAG, "Initialized data");
   }
 
   public void close()
-  { 
+  {
     this.dbHelper.close();
   }
 
   @SuppressLint("NewApi")
   public void insertOrIgnore(ContentValues values)
-  { 
+  {
     Log.d(TAG, "insertOrIgnore on " + values);
-    SQLiteDatabase db = this.dbHelper.getWritableDatabase(); 
+    SQLiteDatabase db = this.dbHelper.getWritableDatabase();
     try
     {
-      db.insertWithOnConflict(TABLE, null, values, SQLiteDatabase.CONFLICT_IGNORE); 
+      db.insertWithOnConflict(TABLE, null, values, SQLiteDatabase.CONFLICT_IGNORE);
     }
     finally
     {
-      db.close(); 
+      db.close();
     }
   }
 
   public Cursor getStatusUpdates()
-  { 
+  {
     SQLiteDatabase db = this.dbHelper.getReadableDatabase();
     return db.query(TABLE, null, null, null, null, null, GET_ALL_ORDER_BY);
   }
 
   public long getLatestStatusCreatedAtTime()
-  { 
+  {
     SQLiteDatabase db = this.dbHelper.getReadableDatabase();
     try
     {
@@ -106,7 +106,7 @@ public class StatusData
   }
 
   public String getStatusTextById(long id)
-  { 
+  {
     SQLiteDatabase db = this.dbHelper.getReadableDatabase();
     try
     {
@@ -125,4 +125,12 @@ public class StatusData
       db.close();
     }
   }
+
+  public void delete()
+  {
+    SQLiteDatabase db = dbHelper.getWritableDatabase();
+    db.delete(TABLE, null, null);
+    db.close();
+  }
+
 }
