@@ -13,6 +13,7 @@
   <string name="titleApiRoot">API Root</string>
   <string name="titleServiceStop">Stop Service</string>
   <string name="titleServiceStart">Start Service</string>
+  <string name="titleTimeline">Timeline</string>
   
   <string name="summaryUsername">Please enter your username</string>
   <string name="summaryPassword">Please enter your password</string>
