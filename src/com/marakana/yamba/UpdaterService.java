@@ -86,9 +86,11 @@ public class UpdaterService extends Service
             Log.e(TAG, "Failed to connect to twitter service", e); 
           }
 
+          Log.d(TAG, "Updater: About to traverse timeline...");
           for (Twitter.Status status : timeline)
           { 
-            Log.d(TAG, String.format("%s: %s", status.user.name, status.text)); 
+            String message = String.format("%s: %s", status.user.name, status.text);
+            Log.d(TAG, "Updater" + message); 
           }
 
           Log.d(TAG, "Updater ran");
@@ -96,6 +98,7 @@ public class UpdaterService extends Service
         }
         catch (InterruptedException e)
         {
+          Log.d(TAG, "Interrupted");
           updaterService.runFlag = false;
         }
       }
