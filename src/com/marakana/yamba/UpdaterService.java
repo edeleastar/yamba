@@ -4,7 +4,9 @@ import java.util.List;
 import winterwell.jtwitter.Twitter;
 import winterwell.jtwitter.TwitterException;
 import android.app.Service;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -12,10 +14,12 @@ public class UpdaterService extends Service
 {
   private static final String TAG = "UpdaterService";
 
-  static final int DELAY = 20000; 
+  static final int DELAY = 20000;
   private boolean runFlag = false;
   private Updater updater;
-  private YambaApplication yamba; 
+  private YambaApplication yamba;
+  DbHelper dbHelper;
+  SQLiteDatabase db;
 
   @Override
   public IBinder onBind(Intent intent)
@@ -29,6 +33,8 @@ public class UpdaterService extends Service
     super.onCreate();
     this.yamba = (YambaApplication) getApplication();
     this.updater = new Updater();
+
+    dbHelper = new DbHelper(this);
 
     Log.d(TAG, "onCreated");
   }
@@ -68,7 +74,6 @@ public class UpdaterService extends Service
       super("UpdaterService-Updater");
     }
 
-    @Override
     public void run()
     {
       UpdaterService updaterService = UpdaterService.this;
@@ -79,29 +84,45 @@ public class UpdaterService extends Service
         {
           try
           {
-            timeline = yamba.getTwitter().getFriendsTimeline(); 
+            timeline = yamba.getTwitter().getFriendsTimeline();
           }
           catch (TwitterException e)
           {
-            Log.e(TAG, "Failed to connect to twitter service", e); 
+            Log.e(TAG, "Failed to connect to twitter service", e);
           }
 
-          Log.d(TAG, "Updater: About to traverse timeline...");
+          db = dbHelper.getWritableDatabase();
+
+          ContentValues values = new ContentValues(); 
           for (Twitter.Status status : timeline)
           { 
-            String message = String.format("%s: %s", status.user.name, status.text);
-            Log.d(TAG, "Updater" + message); 
+            values.clear(); 
+            values.put(DbHelper.C_ID, status.id);
+            values.put(DbHelper.C_CREATED_AT, status.createdAt.getTime());
+            //values.put(DbHelper.C_SOURCE, status.source);
+            values.put(DbHelper.C_TEXT, status.text);
+            values.put(DbHelper.C_USER, status.user.name);
+            
+            try
+            {
+              db.insertOrThrow(DbHelper.TABLE, null, values); 
+            }
+            catch (Exception e)
+            {
+              Log.d(TAG, "Updater Data base error" + e.getMessage());  
+            }
+            Log.d(TAG, String.format("%s: %s", status.user.name, status.text));
           }
+          db.close(); 
 
           Log.d(TAG, "Updater ran");
           Thread.sleep(DELAY);
         }
         catch (InterruptedException e)
         {
-          Log.d(TAG, "Interrupted");
           updaterService.runFlag = false;
         }
       }
     }
-  } 
+  }
 }
